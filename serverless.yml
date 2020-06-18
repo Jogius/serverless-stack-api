@@ -12,21 +12,118 @@ plugins:
 
 provider:
   name: aws
-  runtime: nodejs10.x
-  stage: dev
+  runtime: nodejs12.x
+  stage: prod
   region: us-east-1
   # To load environment variables externally
-  # rename env.example to .env and uncomment
+  # rename .env to .env and uncomment
   # the following line. Also, make sure to not
   # commit your .env.
   #
   #environment:
   #  SAMPLE_ENV_VAR: ${env:SAMPLE_ENV_VAR}
 
+  environment:
+    tableName: notes
+    stripeSecretKey: $(env:STRIPE_SECRET_KEY}
+
+  # 'iamroleStatements' are responsible for defining the permission policy of the lambda function
+  iamRoleStatemenmts:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribtTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:us-east-1:288595786328:table/notes"
+
+
+# Create our resources with separate CloudFormation templates
+resources:
+  - # API Gateway Errors
+  - ${file(resources/api-gateway-errors.yml)}
+
 functions:
-  hello:
-    handler: handler.hello
+  # Defines an HTTP API endpoint that calls the create.js main function
+  # - path: url path is /notes
+  # - method: POST request
+  # - cors: enable CORS for browser cross domain api call
+  # - authorizer: authentication through AWS IAM role
+  create:
+    handler: create.main
     events:
       - http:
-          path: hello
+          path: notes
+          method: post
+          cors: true
+          authporizer: aws_iam
+
+  # Defines an HTTP API endpoint that calls the main function in get.js
+  # - path: url path is /notes/{id}
+  # - method: GET request
+  # - cors: see above
+  # - authorizer: see above
+  get:
+    handler: get.main
+    events:
+      - http:
+          path: notes/{id}
           method: get
+          cors: true
+          authorizer: aws_iam
+
+  # Defines an HTTP API endpoint that calls the main function in list.js
+  # - path: url path is /notes
+  # - method: GET request
+  # - cors: see above
+  # - authorizer: see above
+  list:
+    handler: list.main
+    events:
+      - http:
+          path: notes
+          method: get
+          cors: true
+          authorizer: aws_iam
+  # Defines an HTTP API endpoint that calls the main function in update.js
+  # - path: url path is /notes/{id}
+  # - method: PUT request
+  # - cors: see above
+  # - authorizer: see above
+  update:
+    handler: update.main
+    events:
+      - http:
+          path: notes/{id}
+          method: put
+          cors: true
+          authorizer: aws_iam
+  # Defines an HTTP API endpoint that calls the main function in delete.js
+  # - path: url path is /notes/{id}
+  # - method: DELETE request
+  # - cors: see above
+  # - authorizer: see above
+  delete:
+    handler: delete.main
+    events:
+      - http:
+          path: notes/{id}
+          method: delete
+          cors: true
+          authorizer: aws_iam
+  # Defines an HTTP API endpoint that calls the main function in billing.js
+  # - path: url path is /billing
+  # - method: POST request
+  # - cors: see above
+  # - authorizer: see above
+  billing:
+    handler: billing.main
+    events:
+      - https:
+          path: billing
+          method: post
+          cors: true
+          authorizer: aws_iam
