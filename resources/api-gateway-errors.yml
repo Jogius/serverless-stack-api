@@ -7,7 +7,7 @@ Resources:
         gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
       ResponseType: DEFAULT_4XX
       RestApiId:
-        Ref: 'ApiGatewaysRestApi'
+        Ref: 'ApiGatewayRestApi'
   GatewayResponseDefault5XX:
     Type: 'AWS::ApiGateway::GatewayResponse'
     Properties:
