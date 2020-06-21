@@ -28,10 +28,10 @@ provider:
     stripeSecretKey: $(env:STRIPE_SECRET_KEY}
 
   # 'iamroleStatements' are responsible for defining the permission policy of the lambda function
-  iamRoleStatemenmts:
+  iamRoleStatements:
     - Effect: Allow
       Action:
-        - dynamodb:DescribtTable
+        - dynamodb:DescribeTable
         - dynamodb:Query
         - dynamodb:Scan
         - dynamodb:GetItem
