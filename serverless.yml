@@ -38,7 +38,7 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:us-east-1:288595786328:table/notes"
+      Resource: "arn:aws:dynamodb:us-east-1:*:*"
 
 
 # Create our resources with separate CloudFormation templates
@@ -59,7 +59,7 @@ functions:
           path: notes
           method: post
           cors: true
-          authporizer: aws_iam
+          authorizer: aws_iam
 
   # Defines an HTTP API endpoint that calls the main function in get.js
   # - path: url path is /notes/{id}
